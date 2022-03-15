@@ -1,5 +1,6 @@
 #!/bin/python3
 
+from operator import contains
 import sys, re, csv, plotille
 import numpy as np
 
@@ -53,26 +54,29 @@ x_tax_year,s_city,y_pcnt_red
         curr_idx += 1
 
     data.pop() # remove trailing newline
+    data.pop(0) # remove first row
 
     # get a list of unique series names
-    series_names = []
-    for row in data:
-        if row[series_idx] not in series_names and row[series_idx] != series_label:
-            series_names.append(row[series_idx])
- 
-    # for each series member, get the x and y values
     series_data = {}
-    for sn in series_names:
-        series_data[sn] = []
-        for row in data:
-            if row[series_idx] == sn:
-                series_data[sn].append((row[x_axis_idx], row[y_axis_idx]))
-    
-    # plot the data
-    p = plotille.Plotille()
-    p.set_option('label_font_size', '10')
-    p.set_option('label_font_family', 'monospace')
-    p.set_option('label_font_weight', 'bold')
-    p.set_option('label_font_color', '#ffffff')
+    series_list = []
+    for row in data:
+        if row[series_idx] not in series_data.keys():
+            current_series = row[series_idx]
+            series_list.append(current_series)
+            series_data[current_series] = {'x': [], 'y': []}
+        series_data[current_series]['x'].append(int(row[x_axis_idx]))
+        series_data[current_series]['y'].append(int(row[y_axis_idx]))
+
+    fig = plotille.Figure()
+    fig.width = 80
+    fig.height = 30
+    fig.set_x_limits(2010, 2014)
+    fig.set_y_limits(0, 100)
+    fig.color_mode = 'byte'
+
+    for series in series_list: 
+        fig.plot(series_data[series]['x'], series_data[series]['y'], label=series)
+
+    print(fig.show(legend=True))
 
     
