@@ -1,6 +1,4 @@
-#!/bin/python3
-
-from operator import contains
+#!/usr/bin/python3
 import sys, re, csv, plotille
 import numpy as np
 
