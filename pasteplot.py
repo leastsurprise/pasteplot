@@ -2,6 +2,10 @@
 import sys, re, csv, plotille
 import numpy as np
 
+def _num_formatter(val, chars, delta, left=False):
+    align = '<' if left else ''
+    return '{:{}{}d}'.format(int(val), align, chars)
+
 if __name__ == '__main__':
 
     d = """
@@ -41,10 +45,10 @@ x_tax_year,s_city,y_pcnt_red
     curr_idx = 0
     for cn in column_names:
         if cn.startswith('x_'):
-            x_axis_label = cn
+            x_axis_label = re.sub(r'^x_(.*)$', r'\1', cn)
             x_axis_idx = curr_idx
         elif cn.startswith('y_'):
-            y_axis_label = cn
+            y_axis_label = re.sub(r'^y_(.*)$', r'\1', cn)
             y_axis_idx = curr_idx
         elif cn.startswith('s_'):
             series_label = cn
@@ -68,8 +72,12 @@ x_tax_year,s_city,y_pcnt_red
     fig = plotille.Figure()
     fig.width = 80
     fig.height = 30
+    fig.register_label_formatter(float, _num_formatter)
+    fig.register_label_formatter(int, _num_formatter)
     fig.set_x_limits(2010, 2014)
     fig.set_y_limits(0, 100)
+    fig.x_label = x_axis_label
+    fig.y_label = y_axis_label 
     fig.color_mode = 'byte'
 
     for series in series_list: 
