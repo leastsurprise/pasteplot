@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import sys, re, csv, plotille
-import numpy as np
 
 def _num_formatter(val, chars, delta, left=False):
     align = '<' if left else ''
